@@ -1,73 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Email Template Form</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Send Email Example</title>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .container {
-      background: #f9f9f9;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 4px;
-      border: 1px solid #ddd;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-    }
-    button:disabled {
-      background-color: #ccc;
-    }
-    .status {
-      margin-top: 10px;
-      font-size: 14px;
-    }
+    body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+    .container { padding: 20px; background: white; max-width: 600px; margin: 50px auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #ddd; }
+    button { background: #4CAF50; color: white; cursor: pointer; }
+    button:disabled { background: #ccc; }
+    h1 { text-align: center; color: #011a44; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Send Email</h1>
+  <h1>Send an Email</h1>
   <form id="emailForm">
-    <input type="text" id="name" placeholder="Name" required>
-    <input type="email" id="email" placeholder="Email Address" required>
-    
+    <input type="text" id="name" placeholder="Enter your Name" required>
+    <input type="email" id="email" placeholder="Enter your Email" required>
     <select id="templateSelect" required>
-      <option value="">Choose a template</option>
+      <option value="">Select a Template</option>
       <option value="template_litgyb8">Welcome Template</option>
       <option value="template_lesqw76">Reminder Template</option>
     </select>
-
     <button type="submit" id="sendBtn" disabled>Send Email</button>
   </form>
-
-  <p class="status" id="status"></p>
+  <p id="status" style="text-align: center;"></p>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.5.0/dist/email.min.js"></script>
 <script>
-  // Initialize EmailJS with your updated public key
+  // Initialize EmailJS with your public key
   emailjs.init("Safu5CtjKcuBhp2hh");
 
-  // Select DOM elements
   const form = document.getElementById('emailForm');
   const nameInput = document.getElementById('name');
   const emailInput = document.getElementById('email');
@@ -75,48 +42,45 @@
   const sendBtn = document.getElementById('sendBtn');
   const status = document.getElementById('status');
 
-  // Enable or disable the "Send Email" button based on template selection
+  // Enable button when a template is selected
   templateSelect.addEventListener('change', function() {
-    console.log("Template selected: ", templateSelect.value); // Debugging line
     sendBtn.disabled = !templateSelect.value;
   });
 
-  // Handle form submission
   form.addEventListener('submit', function(e) {
     e.preventDefault();
-    console.log("Form submitted"); // Debugging line
 
-    // Get input values
-    const fullName = nameInput.value;  // Mapping 'name' to 'full_name'
+    const fullName = nameInput.value;
     const userEmail = emailInput.value;
-    const template = templateSelect.value;
+    const selectedTemplate = templateSelect.value;
 
-    if (!fullName || !userEmail || !template) {
+    if (!fullName || !userEmail || !selectedTemplate) {
       status.textContent = 'Please fill out all fields and select a template.';
       status.style.color = 'red';
       return;
     }
 
-    // Template parameters for EmailJS, matching the placeholders in your template
     const templateParams = {
-      full_name: fullName,  // Use full_name to match the placeholder {{full_name}} in your template
+      full_name: fullName,
       to_email: userEmail,
     };
 
-    // Send email using EmailJS
-    emailjs.send("service_8fcs4jh", template, templateParams)
+    // Send email via EmailJS
+    emailjs.send("service_8fcs4jh", selectedTemplate, templateParams)
       .then(function(response) {
-        console.log("Email sent successfully", response); // Debugging line
+        console.log('Email sent successfully:', response);
         status.textContent = 'Email sent successfully!';
         status.style.color = 'green';
-        // Clear input fields after sending
+
+        // Clear form and disable button
         nameInput.value = '';
         emailInput.value = '';
         templateSelect.value = '';
         sendBtn.disabled = true;
-      }, function(error) {
-        console.error("Error sending email", error); // Debugging line
-        status.textContent = 'Failed to send email. Check the console for errors.';
+      })
+      .catch(function(error) {
+        console.error('Error sending email:', error);
+        status.textContent = 'Failed to send email. Please try again later.';
         status.style.color = 'red';
       });
   });
