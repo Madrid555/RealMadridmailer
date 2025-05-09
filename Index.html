@@ -1,87 +1,106 @@
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Template Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
 
-export default function EmailForm() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [template, setTemplate] = useState("");
-  const [status, setStatus] = useState("");
+<div class="container">
+  <h1>Send Email</h1>
+  <form id="emailForm">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="email" id="email" placeholder="Email Address" required>
+    
+    <select id="templateSelect" required>
+      <option value="">Choose a template</option>
+      <option value="template_litgyb8">Welcome Template</option>
+      <option value="template_lesqw76">Reminder Template</option>
+    </select>
 
-  const sendEmail = async (e) => {
+    <button type="submit" id="sendBtn" disabled>Send Email</button>
+  </form>
+
+  <p class="status" id="status"></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.5.0/dist/email.min.js"></script>
+<script>
+  emailjs.init("S1ITdMEdLhNQlAZq_");
+
+  const form = document.getElementById('emailForm');
+  const nameInput = document.getElementById('name');
+  const emailInput = document.getElementById('email');
+  const templateSelect = document.getElementById('templateSelect');
+  const sendBtn = document.getElementById('sendBtn');
+  const status = document.getElementById('status');
+
+  templateSelect.addEventListener('change', function() {
+    sendBtn.disabled = !templateSelect.value;
+  });
+
+  form.addEventListener('submit', function(e) {
     e.preventDefault();
-
-    const serviceID = "service_8fcs4jh";
-    const userID = "S1ITdMEdLhNQlAZq_"; // Public key
-
-    const templateID = template;
+    
+    const name = nameInput.value;
+    const email = emailInput.value;
+    const template = templateSelect.value;
 
     const templateParams = {
       to_name: name,
       to_email: email,
     };
 
-    try {
-      const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          service_id: serviceID,
-          template_id: templateID,
-          user_id: userID,
-          template_params: templateParams,
-        }),
+    emailjs.send("service_8fcs4jh", template, templateParams)
+      .then(function(response) {
+        status.textContent = 'Email sent successfully!';
+        nameInput.value = '';
+        emailInput.value = '';
+        templateSelect.value = '';
+        sendBtn.disabled = true;
+      }, function(error) {
+        status.textContent = 'Failed to send email.';
       });
+  });
+</script>
 
-      if (res.ok) {
-        setStatus("Email sent successfully!");
-        setName("");
-        setEmail("");
-        setTemplate("");
-      } else {
-        setStatus("Failed to send email.");
-      }
-    } catch (error) {
-      console.error("Error sending email:", error);
-      setStatus("An error occurred.");
-    }
-  };
-
-  return (
-    <div className="max-w-md mx-auto mt-20 p-6 border rounded-2xl shadow-md">
-      <h1 className="text-2xl font-bold mb-4">Send Email</h1>
-      <form onSubmit={sendEmail} className="space-y-4">
-        <Input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <Input
-          type="email"
-          placeholder="Email Address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <Select value={template} onValueChange={setTemplate} required>
-          <SelectTrigger>
-            <SelectValue placeholder="Choose a template" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="template_litgyb8">Welcome Template</SelectItem>
-            <SelectItem value="template_lesqw76">Reminder Template</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button type="submit" className="w-full" disabled={!template}>
-          Send Email
-        </Button>
-        {status && <p className="text-sm mt-2">{status}</p>}
-      </form>
-    </div>
-  );
-}
+</body>
+</html>
