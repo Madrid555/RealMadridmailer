@@ -77,33 +77,36 @@
 
   // Enable or disable the "Send Email" button based on template selection
   templateSelect.addEventListener('change', function() {
+    console.log("Template selected: ", templateSelect.value); // Debugging line
     sendBtn.disabled = !templateSelect.value;
   });
 
   // Handle form submission
   form.addEventListener('submit', function(e) {
     e.preventDefault();
+    console.log("Form submitted"); // Debugging line
 
     // Get input values
-    const name = nameInput.value;
-    const email = emailInput.value;
+    const fullName = nameInput.value;  // Mapping 'name' to 'full_name'
+    const userEmail = emailInput.value;
     const template = templateSelect.value;
 
-    if (!name || !email || !template) {
+    if (!fullName || !userEmail || !template) {
       status.textContent = 'Please fill out all fields and select a template.';
       status.style.color = 'red';
       return;
     }
 
-    // Template parameters for EmailJS
+    // Template parameters for EmailJS, matching the placeholders in your template
     const templateParams = {
-      to_name: name,
-      to_email: email,
+      full_name: fullName,  // Use full_name to match the placeholder {{full_name}} in your template
+      to_email: userEmail,
     };
 
     // Send email using EmailJS
     emailjs.send("service_8fcs4jh", template, templateParams)
       .then(function(response) {
+        console.log("Email sent successfully", response); // Debugging line
         status.textContent = 'Email sent successfully!';
         status.style.color = 'green';
         // Clear input fields after sending
@@ -112,9 +115,9 @@
         templateSelect.value = '';
         sendBtn.disabled = true;
       }, function(error) {
+        console.error("Error sending email", error); // Debugging line
         status.textContent = 'Failed to send email. Check the console for errors.';
         status.style.color = 'red';
-        console.error(error);  // Log error for debugging
       });
   });
 </script>
