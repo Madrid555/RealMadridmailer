@@ -64,8 +64,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.5.0/dist/email.min.js"></script>
 <script>
+  // Initialize EmailJS with your user ID
   emailjs.init("S1ITdMEdLhNQlAZq_");
 
+  // Select DOM elements
   const form = document.getElementById('emailForm');
   const nameInput = document.getElementById('name');
   const emailInput = document.getElementById('email');
@@ -73,31 +75,38 @@
   const sendBtn = document.getElementById('sendBtn');
   const status = document.getElementById('status');
 
+  // Enable or disable the "Send Email" button based on template selection
   templateSelect.addEventListener('change', function() {
     sendBtn.disabled = !templateSelect.value;
   });
 
+  // Handle form submission
   form.addEventListener('submit', function(e) {
     e.preventDefault();
-    
+
+    // Get input values
     const name = nameInput.value;
     const email = emailInput.value;
     const template = templateSelect.value;
 
+    // Template parameters for EmailJS
     const templateParams = {
       to_name: name,
       to_email: email,
     };
 
+    // Send email using EmailJS
     emailjs.send("service_8fcs4jh", template, templateParams)
       .then(function(response) {
         status.textContent = 'Email sent successfully!';
+        status.style.color = 'green';
         nameInput.value = '';
         emailInput.value = '';
         templateSelect.value = '';
         sendBtn.disabled = true;
       }, function(error) {
         status.textContent = 'Failed to send email.';
+        status.style.color = 'red';
       });
   });
 </script>
