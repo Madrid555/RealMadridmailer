@@ -64,8 +64,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.5.0/dist/email.min.js"></script>
 <script>
-  // Initialize EmailJS with your user ID
-  emailjs.init("S1ITdMEdLhNQlAZq_");
+  // Initialize EmailJS with your updated public key
+  emailjs.init("Safu5CtjKcuBhp2hh");
 
   // Select DOM elements
   const form = document.getElementById('emailForm');
@@ -89,6 +89,12 @@
     const email = emailInput.value;
     const template = templateSelect.value;
 
+    if (!name || !email || !template) {
+      status.textContent = 'Please fill out all fields and select a template.';
+      status.style.color = 'red';
+      return;
+    }
+
     // Template parameters for EmailJS
     const templateParams = {
       to_name: name,
@@ -100,13 +106,15 @@
       .then(function(response) {
         status.textContent = 'Email sent successfully!';
         status.style.color = 'green';
+        // Clear input fields after sending
         nameInput.value = '';
         emailInput.value = '';
         templateSelect.value = '';
         sendBtn.disabled = true;
       }, function(error) {
-        status.textContent = 'Failed to send email.';
+        status.textContent = 'Failed to send email. Check the console for errors.';
         status.style.color = 'red';
+        console.error(error);  // Log error for debugging
       });
   });
 </script>
