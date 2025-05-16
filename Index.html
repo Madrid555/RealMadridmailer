@@ -6,85 +6,158 @@
   <title>Send Email Example</title>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
-    .container { padding: 20px; background: white; max-width: 600px; margin: 50px auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #ddd; }
-    button { background: #4CAF50; color: white; cursor: pointer; }
-    button:disabled { background: #ccc; }
-    h1 { text-align: center; color: #011a44; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      padding: 20px;
+      background: white;
+      max-width: 600px;
+      margin: 50px auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #ccc;
+    }
+    h1 {
+      text-align: center;
+      color: #011a44;
+    }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Real Madrid Mailer</h1>
-  <form id="emailForm">
-    <input type="text" id="name" placeholder="Enter your Name" required>
-    <input type="email" id="email" placeholder="Enter your Email" required>
-    <select id="templateSelect" required>
-      <option value="">Select a Template</option>
-      <option value="template_litgyb8">Approval Template</option>
-      <option value="template_lesqw76">Payment Template</option>
-    </select>
-    <button type="submit" id="sendBtn" disabled>Send Email</button>
-  </form>
-  <p id="status" style="text-align: center;"></p>
-</div>
+  <!-- Real Madrid Mailer -->
+  <div class="container">
+    <h1>Real Madrid Mailer</h1>
+    <form id="emailFormMadrid">
+      <input type="text" id="name" placeholder="Enter your Name" required>
+      <input type="email" id="email" placeholder="Enter your Email" required>
+      <select id="templateSelect" required>
+        <option value="">Select a Template</option>
+        <option value="template_litgyb8">Approval Template</option>
+        <option value="template_lesqw76">Payment Template</option>
+      </select>
+      <button type="submit" id="sendBtn" disabled>Send Email</button>
+    </form>
+    <p id="status" style="text-align: center;"></p>
+  </div>
 
-<script>
-  // Initialize EmailJS with your public key
-  emailjs.init("Safu5CtjKcuBhp2hh");
+  <!-- NHS Recruitment Mailer -->
+  <div class="container">
+    <h1>NHS Recruitment Mailer</h1>
+    <form id="emailFormNHS">
+      <input type="text" id="nhsName" placeholder="Full Name" required>
+      <input type="text" id="nhsPosition" placeholder="Applied Position" required>
+      <input type="email" id="nhsEmail" placeholder="Your Email" required>
+      <button type="submit" id="sendBtnNHS">Send NHS Mail</button>
+    </form>
+    <p id="statusNHS" style="text-align: center;"></p>
+  </div>
 
-  const form = document.getElementById('emailForm');
-  const nameInput = document.getElementById('name');
-  const emailInput = document.getElementById('email');
-  const templateSelect = document.getElementById('templateSelect');
-  const sendBtn = document.getElementById('sendBtn');
-  const status = document.getElementById('status');
+  <script>
+    // Initialize both EmailJS keys
+    emailjs.init("Safu5CtjKcuBhp2hh"); // Real Madrid (unchanged)
+    const nhsPublicKey = "tJYnuJm0nTvbqWom2"; // NHS
+    const nhsServiceID = "service_z1hpltc";
+    const nhsTemplateID = "template_t4l5vca";
 
-  // Enable button when a template is selected
-  templateSelect.addEventListener('change', function() {
-    sendBtn.disabled = !templateSelect.value;
-  });
+    // Real Madrid Mailer Logic
+    const madridForm = document.getElementById('emailFormMadrid');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const templateSelect = document.getElementById('templateSelect');
+    const sendBtn = document.getElementById('sendBtn');
+    const status = document.getElementById('status');
 
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
+    templateSelect.addEventListener('change', function() {
+      sendBtn.disabled = !templateSelect.value;
+    });
 
-    const fullName = nameInput.value;
-    const userEmail = emailInput.value;
-    const selectedTemplate = templateSelect.value;
+    madridForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const fullName = nameInput.value;
+      const userEmail = emailInput.value;
+      const selectedTemplate = templateSelect.value;
 
-    if (!fullName || !userEmail || !selectedTemplate) {
-      status.textContent = 'Please fill out all fields and select a template.';
-      status.style.color = 'red';
-      return;
-    }
-
-    const templateParams = {
-      full_name: fullName,
-      to_email: userEmail,
-    };
-
-    // Send email via EmailJS
-    emailjs.send("service_8fcs4jh", selectedTemplate, templateParams)
-      .then(function(response) {
-        console.log('Email sent successfully:', response);
-        status.textContent = 'Email sent successfully!';
-        status.style.color = 'green';
-
-        // Clear form and disable button
-        nameInput.value = '';
-        emailInput.value = '';
-        templateSelect.value = '';
-        sendBtn.disabled = true;
-      })
-      .catch(function(error) {
-        console.error('Error sending email:', error);
-        status.textContent = 'Failed to send email. Please try again later.';
+      if (!fullName || !userEmail || !selectedTemplate) {
+        status.textContent = 'Please fill out all fields and select a template.';
         status.style.color = 'red';
-      });
-  });
-</script>
+        return;
+      }
 
+      const templateParams = {
+        full_name: fullName,
+        to_email: userEmail,
+      };
+
+      emailjs.send("service_8fcs4jh", selectedTemplate, templateParams)
+        .then(function(response) {
+          console.log('Email sent successfully:', response);
+          status.textContent = 'Email sent successfully!';
+          status.style.color = 'green';
+          nameInput.value = '';
+          emailInput.value = '';
+          templateSelect.value = '';
+          sendBtn.disabled = true;
+        })
+        .catch(function(error) {
+          console.error('Error sending email:', error);
+          status.textContent = 'Failed to send email. Please try again later.';
+          status.style.color = 'red';
+        });
+    });
+
+    // NHS Mailer Logic
+    document.getElementById('emailFormNHS').addEventListener('submit', function(e) {
+      e.preventDefault();
+      emailjs.init(nhsPublicKey); // Re-initialize for NHS
+
+      const nhsName = document.getElementById('nhsName').value;
+      const nhsPosition = document.getElementById('nhsPosition').value;
+      const nhsEmail = document.getElementById('nhsEmail').value;
+      const statusNHS = document.getElementById('statusNHS');
+
+      if (!nhsName || !nhsPosition || !nhsEmail) {
+        statusNHS.textContent = 'Please fill out all fields.';
+        statusNHS.style.color = 'red';
+        return;
+      }
+
+      const nhsParams = {
+        full_name: nhsName,
+        applied_position: nhsPosition,
+        email: nhsEmail,
+      };
+
+      emailjs.send(nhsServiceID, nhsTemplateID, nhsParams)
+        .then(function(response) {
+          console.log('NHS Email sent:', response);
+          statusNHS.textContent = 'NHS email sent successfully!';
+          statusNHS.style.color = 'green';
+          document.getElementById('emailFormNHS').reset();
+        })
+        .catch(function(error) {
+          console.error('NHS Email error:', error);
+          statusNHS.textContent = 'Failed to send NHS email.';
+          statusNHS.style.color = 'red';
+        });
+    });
+  </script>
 </body>
 </html>
